@@ -14,12 +14,15 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org
-      - name: Install
-        run: yarn install --frozen-lockfile
-      - name: Test
-        env:
-          LAMBDA_REMOTE_DOCKER: true
-        run: yarn test
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+          architecture: 'x64'
+      - name: Install dependencies
+        run: |
+          pip install jupyterlab==2.2.0
+          yarn
       - id: tagExistsAndVersion
         name: Check if tags exist in NPM and GIT
         run: |

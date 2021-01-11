@@ -23,20 +23,6 @@ jobs:
         run: |
           pip install jupyterlab==2.2.0
           yarn
-      - id: tagExistsAndVersion
-        name: Check if tags exist in NPM and GIT
-        run: |
-          set +e
-          packageName="$(node -p "require('./package').name")"
-          packageVersion="$(node -p "require('./package').version")"
-          packageNameAndVersion="${packageName}@${packageVersion}"
-
-          npm view "${packageNameAndVersion}" dist.tarball | grep "${packageVersion}" > /dev/null
-          npmTagExists="$([ "$?" = "0" ] && BOOL="true" || BOOL="false"; echo $BOOL)"
-
-          set -e
-          echo "::set-output name=npmTagExists::${npmTagExists}"
-          echo "::set-output name=packageVersion::${packageVersion}"
       - name: Publish
         if: ${{ steps.tagExistsAndVersion.outputs.npmTagExists == 'false'}}
         run: npm publish --access public

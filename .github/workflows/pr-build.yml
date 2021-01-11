@@ -1,0 +1,21 @@
+name: PR Build and Test
+
+on:
+  pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Node.JS ${{ matrix.node-version }}
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build the extension
+      run: yarn build

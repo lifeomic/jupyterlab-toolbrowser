@@ -64,11 +64,15 @@ const fetchDownloadRequest = async (event: any): Promise<void> => {
     const downloadResponse = (await response.json()) as IDownloadResponse;
 
     const contents = new ContentsManager();
+    // We don't want to let the tool download overwrite an existing file so
+    // we check to see if the file already exists
     try {
       await contents.get(downloadResponse.fileName);
+      // no exception thrown, so file exists, don't allow download
       alert(`File ${downloadResponse.fileName} already exists`);
       return;
     } catch (err) {
+      // exception was thrown so file doesn't exist, allow the download
       console.log(`Ready to download ${downloadResponse.fileName}`);
     }
 

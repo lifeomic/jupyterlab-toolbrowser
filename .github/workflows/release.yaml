@@ -31,11 +31,10 @@ jobs:
           packageVersion="$(node -p "require('./package').version")"
           packageNameAndVersion="${packageName}@${packageVersion}"
 
-          npm view "${packageNameAndVersion}" dist.tarball | grep "${packageVersion}" > /dev/null
+          # npm view "${packageNameAndVersion}" dist.tarball | grep "${packageVersion}" > /dev/null
           # Update the below once the initial version is out
           # npmTagExists="$([ "$?" = "0" ] && BOOL="true" || BOOL="false"; echo $BOOL)"
-          npmTagExists=false
-          packageVersion=0.1.0
+          npmTagExists=false         
           set -e
           echo "::set-output name=npmTagExists::${npmTagExists}"
           echo "::set-output name=packageVersion::${packageVersion}"

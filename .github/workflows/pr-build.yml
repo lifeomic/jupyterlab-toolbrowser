@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+       node-version: '10.x'
+    - name: Install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.7'
+        architecture: 'x64'
+    - name: Install dependencies
+      run: |
+        pip install jupyterlab==2.2.0
+        yarn
+    - name: Build the extension
+      run: |
+        yarn build
+        jupyter labextension install .
+        jupyter lab build
+        jupyter labextension list 1>labextensions 2>&1
+        cat labextensions | grep "jupyterlab-toolbrowser.*OK"

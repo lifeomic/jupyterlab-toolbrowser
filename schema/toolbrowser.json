@@ -1,0 +1,7 @@
+{
+  "jupyter.lab.setting-icon-class": "jp-PHC-logo",
+  "jupyter.lab.setting-icon-label": "PHC Tool Browser",
+  "title": "PHC Tool Browser",
+  "description": "The Precision Health Cloud Tool Browser plugin.",
+  "type": "object"
+}

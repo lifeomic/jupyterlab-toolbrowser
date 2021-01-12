@@ -87,7 +87,6 @@ const fetchDownloadRequest = async (event: any): Promise<void> => {
         };
 
         contents.save(`${downloadResponse.fileName}`, model);
-        debugger;
         downloadedTools.push({
           id: toolId,
           fileName: downloadResponse.fileName,

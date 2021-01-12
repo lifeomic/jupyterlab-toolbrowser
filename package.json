@@ -1,6 +1,6 @@
 {
   "name": "@lifeomic/jupyterlab-toolbrowser",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "A JupyterLab extension to display, filter and allow download of notebooks from the Precision Health Cloud Tool Registry.",
   "keywords": [
     "lifeomic",
@@ -24,7 +24,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lifeomic/jupyterlab-toolbrowser.git"
+    "url": "git+https://github.com/lifeomic/jupyterlab-toolbrowser.git"
   },
   "scripts": {
     "build": "tsc",
@@ -40,7 +40,8 @@
     "@jupyterlab/mainmenu": "^2.2.4",
     "@jupyterlab/services": "^5.0.0",
     "@lumino/widgets": "^1.17.0",
-    "@types/lodash": "^4.14.165"
+    "@types/lodash": "^4.14.165",
+    "npm": "^6.14.11"
   },
   "devDependencies": {
     "@types/node": "^14.14.14",
@@ -62,5 +63,8 @@
   ],
   "jupyterlab": {
     "extension": true
+  },
+  "directories": {
+    "lib": "lib"
   }
 }

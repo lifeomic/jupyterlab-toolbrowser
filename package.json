@@ -1,6 +1,6 @@
 {
   "name": "@lifeomic/jupyterlab-toolbrowser",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "A JupyterLab extension to display, filter and allow download of notebooks from the Precision Health Cloud Tool Registry.",
   "keywords": [
     "lifeomic",

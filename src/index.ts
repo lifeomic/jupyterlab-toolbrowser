@@ -62,7 +62,6 @@ const fetchDownloadRequest = async (event: any): Promise<void> => {
       }
     );
     const downloadResponse = (await response.json()) as IDownloadResponse;
-    console.log(downloadResponse);
 
     const contents = new ContentsManager();
     try {
@@ -87,12 +86,8 @@ const fetchDownloadRequest = async (event: any): Promise<void> => {
           path: downloadResponse.fileName,
         };
 
-        const saveResults = contents.save(
-          `${downloadResponse.fileName}`,
-          model
-        );
+        contents.save(`${downloadResponse.fileName}`, model);
         debugger;
-        console.log(saveResults);
         downloadedTools.push({
           id: toolId,
           fileName: downloadResponse.fileName,
@@ -113,11 +108,6 @@ const initializeData = async (): Promise<void> => {
   );
   const token = tokenStore['accessToken'];
   const host = win.location.host;
-
-  debugger;
-  console.log(account);
-  console.log(token);
-  console.log(host);
 
   const response = await fetch(
     `https://${host}/api/v1/trs/v2/tools?toolClass=Notebook&pageSize=1000`,
@@ -244,8 +234,6 @@ const extension: JupyterFrontEndPlugin<void> = {
     palette: ICommandPalette,
     mainMenu: IMainMenu | null
   ) => {
-    console.log('JupyterLab extension toolbrowser is activated!');
-
     // Conntent widget inside of a MainAreaWidget
     const widget = new MainAreaWidget({ content });
     widget.id = 'toolbrowser-jupyterlab';

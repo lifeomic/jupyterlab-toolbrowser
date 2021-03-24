@@ -8,40 +8,56 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Exit if not on master branch
-        if: endsWith(github.ref, 'master') == false
-        run: exit 0
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org
-      - name: Install Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.7'
-          architecture: 'x64'
-      - name: Install dependencies
-        run: |
-          pip install jupyterlab==2.2.0
-          yarn
-      - name: Publish to npm
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          npm publish . --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.LIFEOMIC_NPM_TOKEN}}
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: false
+  release:
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/master'
+      steps:
+        - name: Setup Node
+          uses: actions/setup-node@v1
+          with:
+            node-version: 12.x
+
+        - name: Check out repo
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 2
+
+        - name: Install Python
+          uses: actions/setup-python@v1
+          with:
+            python-version: '3.7'
+            architecture: 'x64'
+        - name: Install dependencies
+          run: |
+            pip install jupyterlab==2.2.0
+            yarn
+        # Fetch tags and describe the commit before the merge commit
+        # to see if it's a version publish
+        - name: Fetch tags
+          run: |
+            git fetch --tags
+            if git describe --exact-match --match "v*.*.*" HEAD^2
+            then
+              echo "Found version commit tag. Publishing."
+              echo "publish=true" >> $GITHUB_ENV
+            else
+              echo "Version commit tag not found. Not publishing."
+            fi
+        - name: Publish
+          if: env.publish == 'true'
+          env:
+            NODE_AUTH_TOKEN: ${{secrets.LIFEOMIC_NPM_TOKEN}}
+          run: |
+            yarn
+            npm publish . --access public
+        - name: Create Release
+          if: env.publish == 'true'
+          id: create_release
+          uses: actions/create-release@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: ${{ github.ref }}
+            draft: false
+            prerelease: false

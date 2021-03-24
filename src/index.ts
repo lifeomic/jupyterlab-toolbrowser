@@ -12,7 +12,7 @@ interface IToolResponse {
   id: string;
   name: string;
   description: string;
-  labels: Array<string>;
+  labels?: Array<string>;
   meta_version: string;
 }
 
@@ -75,29 +75,43 @@ const fetchDownloadRequest = async (event: any): Promise<void> => {
       // exception was thrown so file doesn't exist, allow the download
       console.log(`Ready to download ${downloadResponse.fileName}`);
     }
+  
+    let toolFileContent = '';
+    const handleReader = (reader: ReadableStreamDefaultReader<Uint8Array>) => {
+      const handleContent = ({ value, done }: ReadableStreamDefaultReadResult<Uint8Array>) => {
+        const text = new TextDecoder('utf-8').decode(value);
+        toolFileContent += text;
+        // if we're not done read the next chunk,
+        // if we're finished add the file to the 
+        // jupyter contents manager
+        if (!done) {
+          reader.read().then(handleContent);
+        } else {
+          const model: Partial<Contents.IModel> = {
+            type: 'file',
+            content: toolFileContent,
+            format: 'text',
+            name: downloadResponse.fileName,
+            path: downloadResponse.fileName,
+          };
+  
+          contents.save(`${downloadResponse.fileName}`, model);
+          downloadedTools.push({
+            id: toolId,
+            fileName: downloadResponse.fileName,
+          });
+          const table = generateTable();
+          content.node.appendChild(table);
+        }
+      };
 
+      // kick off the initial read
+      reader.read().then(handleContent);
+    };
     const toolFile = await fetch(downloadResponse.downloadUrl);
-    toolFile.body
-      .getReader()
-      .read()
-      .then(({ value, done }) => {
-        const test = new TextDecoder('utf-8').decode(value);
-        const model: Partial<Contents.IModel> = {
-          type: 'file',
-          content: test,
-          format: 'text',
-          name: downloadResponse.fileName,
-          path: downloadResponse.fileName,
-        };
-
-        contents.save(`${downloadResponse.fileName}`, model);
-        downloadedTools.push({
-          id: toolId,
-          fileName: downloadResponse.fileName,
-        });
-        const table = generateTable();
-        content.node.appendChild(table);
-      });
+    const reader = toolFile.body
+      .getReader();
+    handleReader(reader);
   }
 };
 
@@ -171,6 +185,7 @@ const generateTable = (): HTMLTableElement => {
       const tool = data[i];
       if (
         filterArray.length > 0 &&
+        tool.labels &&
         !tool.labels.some((r) => filterArray.includes(r))
       ) {
         continue;

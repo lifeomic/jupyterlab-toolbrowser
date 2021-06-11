@@ -10,7 +10,7 @@
 # jobs:
 #   release:
 #       runs-on: ubuntu-latest
-#       if: github.ref == 'refs/heads/master'
+#       if: github.base_ref == 'master'
 #       steps:
 #         - name: Setup Node
 #           uses: actions/setup-node@v1
